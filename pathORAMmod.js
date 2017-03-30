@@ -230,9 +230,11 @@ function ORAMWrite(Crypt, posMap, stash, fileID, file, pswd) {
     return [newPath, newStash, posMap];
 }
 
-
+/**********************************************************************
+ * Encrypts the given string as well as pads it to a certain length.
+ *********************************************************************/
 function encrypt(Crypt, plaintext, pswd) {
-	plaintext = pad(plaintext);
+	//plaintext = pad(plaintext);
 	cipher = Crypt.AES.decrypt(plaintext, pswd);
 	
 	return cipher;
@@ -242,7 +244,7 @@ function encrypt(Crypt, plaintext, pswd) {
 function decrypt(Crypt, ciphertext, pswd) {
 	ciphertext = ciphertext.replace(/ /g, "+");
 	plain = Crypt.AES.decrypt(ciphertext, pswd);
-	plain.unpad(plain);
+	//plain.unpad(plain);
 	
 	return plain;
 }
