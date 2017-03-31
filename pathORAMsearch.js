@@ -37,7 +37,8 @@ function pathORAMsearch() {
 			for(k=1; k < 5; k++) {
 				if(fileID > 0) { continue; }
 				else if(path[j][k] == '') { break; }
-				else if(path[j][k].substring(0, path[j][k].length-4) == keyword) { exists = true; }
+				else if(path[j][k].substring(0, path[j][k].length-4) == keyword) 
+					fileID = path[j][k].substring(path[j][k].length-4); 
 			}
 		}
 	}
