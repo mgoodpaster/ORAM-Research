@@ -2,58 +2,58 @@
 // Pad the files & stash
 
 function pathORAMsearch() {
-
+    
     /**********************************************************************
      * Initialize the variables needed for AES 256-bit encryption
      *********************************************************************/
-
+    
     // Password for AES encrypt/decrypt - will be made user input option later
     pswd = "Ch0i@v1vg0O6";
-
+    
     Crypt = new Crypt();
     
     /**********************************************************************
      * Download the position map and stash from the server
      *********************************************************************/
-
+    
     dinfo = download();
     posMap = dinfo[0];
     stash = dinfo[1];
     if(stash == null) { stash = []; }
-
+    
     // Get input from user - keyword to search
-
+    
     keyword = document.getElementById("keyw").value;
     
-	/*********************************************************************
-	 * Linear search through ORAM array to find if keyword exists
-	 ********************************************************************/
-	
-	fileID = -1;
-	for(i=0; i < posMap.length; i++) {	
-		path = ORAMRead(Crypt, posMap, stash, i, pswd);
+    /*********************************************************************
+     * Linear search through ORAM array to find if keyword exists
+     ********************************************************************/
+    
+    fileID = -1;
+    for(i=0; i < posMap.length; i++) {	
+	path = ORAMRead(Crypt, posMap, stash, i, pswd);
     	if(path == -1) { return; }
-		for(j=0; j < path.length; j++) {
-			for(k=1; k < 5; k++) {
-				if(fileID > 0) { continue; }
-				else if(path[j][k] == '') { break; }
-				else if(path[j][k].substring(0, path[j][k].length-4) == keyword) 
-					fileID = path[j][k].substring(path[j][k].length-4); 
-			}
-		}
+	for(j=0; j < path.length; j++) {
+	    for(k=1; k < 5; k++) {
+		if(fileID > 0) { continue; }
+		else if(path[j][k] == '') { break; }
+		else if(path[j][k].substring(0, path[j][k].length-4) == keyword) 
+		    fileID = path[j][k].substring(path[j][k].length-4); 
+	    }
 	}
-	
-	/*********************************************************************
-	 * Print yes/no as to whether or not the keyword exists.
-	 * Will make it so that it gives the fileID of the file eventually.
-	 ********************************************************************/
-	
-	if(fileID > 0) {
-		report = "The keyword's fileID is " + fileID;
-		window.alert(report);
-	}
-	else
-		window.alert("The keyword does not exist!");
+    }
+    
+    /*********************************************************************
+     * Print yes/no as to whether or not the keyword exists.
+     * Will make it so that it gives the fileID of the file eventually.
+     ********************************************************************/
+    
+    if(fileID > 0) {
+	report = "The keyword's fileID is " + fileID;
+	window.alert(report);
+    }
+    else
+	window.alert("The keyword does not exist!");
 }
 
 
@@ -61,8 +61,8 @@ function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
     
     // If trying to read a file that doesn't exist, return an error message
     if((posMap[fileID-1] == null || posMap[fileID-1] == '') || fileID > posMap.length) {
-		window.alert("ERROR: Cannot read a file that doesn't exist!");
-		return -1;
+	window.alert("ERROR: Cannot read a file that doesn't exist!");
+	return -1;
     }
     
     /**********************************************************************
@@ -72,12 +72,12 @@ function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
     
     i = 0;
     while(stash[i] != null) {
-		stash[i] = decrypt(Crypt, stash[i], pswd);
-		i++;
+	stash[i] = decrypt(Crypt, stash[i], pswd);
+	i++;
     }
-	
-   	pathNum = Number(decrypt(Crypt, posMap[fileID-1], pswd));		
-	
+    
+    pathNum = Number(decrypt(Crypt, posMap[fileID-1], pswd));		
+    
     /**********************************************************************
      * Access and download the path from the server.
      * Then add the stash to the end of the path.
@@ -117,15 +117,15 @@ function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
     newData = rearrange(Crypt, pswd, stash, path, posMap, L);
     newPath = newData[0];
     newStash = newData[1];
-	
-	p = writeback([newPath, newStash, posMap]);
     
-	if(p == "Transaction completed sucessfully")
+    p = writeback([newPath, newStash, posMap]);
+    
+    if(p == "Transaction completed sucessfully")
     	return path;
-	else {
-		window.alert(p);
-		return -1;
-	}
+    else {
+	window.alert(p);
+	return -1;
+    }
 }
 
 /**********************************************************************
@@ -135,7 +135,7 @@ function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
 function encrypt(Crypt, plaintext, pswd) {
     //plaintext = pad(plaintext);
     cipher = Crypt.AES.encrypt(String(plaintext), pswd);
-
+    
     return cipher;
 }
 
@@ -151,12 +151,12 @@ function decrypt(Crypt, ciphertext, pswd) {
 
 function decryptPath(Crypt, path, stash, pswd) {
     for(i=0; i < path.length; i++) {
-		for(j=1; j<5; j++) {
-	    	if(path[i][j] == '')
-				break;
-	    	path[i][j] = decrypt(Crypt, path[i][j], pswd);
-	    	stash.push(path[i][j]);
-		}
+	for(j=1; j<5; j++) {
+	    if(path[i][j] == '')
+		break;
+	    path[i][j] = decrypt(Crypt, path[i][j], pswd);
+	    stash.push(path[i][j]);
+	}
     }
     
     return [path, stash];
@@ -199,28 +199,28 @@ function writeback(result) {
 function rearrange(Crypt, pswd, stash, path, posMap, L) {
     newPath = [];   
     for(i = 0; i <= L; i++) {
-		// Initialize the index of the path & find the range needed to be on path
-		newPath[i] = [];
-		newPath[i][0] = path[i][0];
-		range = Math.pow(2, i);
-		pathIndexMin = (Number(path[i][0]) * range) - (numNonLeaf + 1);
-		pathIndexMax = (pathIndexMin + range);
+	// Initialize the index of the path & find the range needed to be on path
+	newPath[i] = [];
+	newPath[i][0] = path[i][0];
+	range = Math.pow(2, i);
+	pathIndexMin = (Number(path[i][0]) * range) - (numNonLeaf + 1);
+	pathIndexMax = (pathIndexMin + range);
 	
-		for(j=0; j < stash.length; j++) {
-	    	if(stash[j] != null && onPath(pathIndexMin, pathIndexMax, Number(decrypt(Crypt, posMap[getFileID(stash[j])-1], pswd)))) {
-				k = 1;
-				while(newPath[i][k] != null) { k++; }
-				newPath[i][k] = encrypt(Crypt, stash[j], pswd);
-				stash[j] = null;
-	    	}
-		}
+	for(j=0; j < stash.length; j++) {
+	    if(stash[j] != null && onPath(pathIndexMin, pathIndexMax, Number(decrypt(Crypt, posMap[getFileID(stash[j])-1], pswd)))) {
+		k = 1;
+		while(newPath[i][k] != null) { k++; }
+		newPath[i][k] = encrypt(Crypt, stash[j], pswd);
+		stash[j] = null;
+	    }
+	}
     }
     
     // Now add the remaining files of the path to the stash
     newStash = [];
     for(i = 0; i < stash.length; i++) {
-		if(stash[i] != null && stash[i] != '') 
-	    	newStash.push(encrypt(Crypt, stash[i], pswd));	
+	if(stash[i] != null && stash[i] != '') 
+	    newStash.push(encrypt(Crypt, stash[i], pswd));	
     }
     
     return [newPath, newStash];
@@ -229,16 +229,16 @@ function rearrange(Crypt, pswd, stash, path, posMap, L) {
 
 function getFileID(file) {
     if(file == null || file == "") 
-		return null;
+	return null;
     splitFile = file.split(" : ");
-    	return splitFile[1];
+    return splitFile[1];
 }
 
 
 function onPath(min, max, pathNum) {
     if(pathNum == null)
-		return false;
+	return false;
     if(min <= Number(pathNum) && max > Number(pathNum)) 
-		return true;
+	return true;
     return false;
 }
