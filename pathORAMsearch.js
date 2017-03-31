@@ -30,18 +30,26 @@ function pathORAMsearch() {
      ********************************************************************/
     
     fileID = -1;
-    for(i=0; i < posMap.length; i++) {	
-	path = ORAMRead(Crypt, posMap, stash, i, pswd);
+    var id;
+    window.alert(posMap.length);
+    for(id = 1; id <= posMap.length; id++) {
+	window.alert(id);
+	path = ORAMRead(Crypt, posMap, stash, id, pswd);
     	if(path == -1) { return; }
-	for(j=0; j < path.length; j++) {
-	    for(k=1; k < 5; k++) {
+	for(j = 0; j < path.length; j++) {
+	    for(k = 1; k < 5; k++) {
 		if(fileID > 0) { continue; }
 		else if(path[j][k] == '') { break; }
-		else if(path[j][k].substring(0, path[j][k].length-4) == keyword) 
-		    fileID = path[j][k].substring(path[j][k].length-4); 
+		else if(path[j][k].substring(path[j][k].length-4) == i)
+		    if(path[j][k].substring(0, path[j][k].length-4) == keyword)
+			fileID = id;
 	    }
 	}
+	window.alert(fileID);
+	window.alert(posMap.length);
+	window.alert("finish loop");
     }
+
     
     /*********************************************************************
      * Print yes/no as to whether or not the keyword exists.
@@ -58,12 +66,6 @@ function pathORAMsearch() {
 
 
 function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
-    
-    // If trying to read a file that doesn't exist, return an error message
-    if((posMap[fileID-1] == null || posMap[fileID-1] == '') || fileID > posMap.length) {
-	window.alert("ERROR: Cannot read a file that doesn't exist!");
-	return -1;
-    }
     
     /**********************************************************************
      * Decrypt the stash before using it.
@@ -94,8 +96,9 @@ function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
     posMap[fileID-1] = encrypt(Crypt, newLoc,pswd);
     
     // Get the path from the database
-    path = access(realPathNum);
     
+    path = access(realPathNum);
+
     /***************************************************************
      * Decrypt the path so it can be used & add it to the stash
      **************************************************************/
@@ -103,9 +106,6 @@ function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
     dpath = decryptPath(Crypt, path, stash, pswd);
     path = dpath[0];
     stash = dpath[1];
-    
-    // Continue after decryption has occurred
-    document.getElementById("path").innerHTML = path;
     
     L = path.length - 1;
     
@@ -120,7 +120,7 @@ function ORAMRead(Crypt, posMap, stash, fileID, pswd) {
     
     p = writeback([newPath, newStash, posMap]);
     
-    if(p == "Transaction completed sucessfully")
+    if(p == "Transaction completed successfully")
     	return path;
     else {
 	window.alert(p);
